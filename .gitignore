@@ -1,0 +1,5 @@
+config/ 
+__pycache__/ 
+memes/*
+config.json
+config_backup.json
