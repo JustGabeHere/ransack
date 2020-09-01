@@ -20,6 +20,7 @@ from instabot import Bot
 # --- VARIABLE DECLARATIONS --- #
 bot = None
 data = None
+captions = None
 
 
 # --- MAIN ENTRY --- #
@@ -31,11 +32,14 @@ def setup():
     global bot
     global subreddit
     global data
+    global captions
 
     # -- Open the config file and define the data variable to contain the data for it
     print('---[SETUP]: Loading config data ---')
     with open("config.json", "r") as file:
         data = json.load(file)     
+        
+    captions = data['instagram']['captions']
     
     print('---[SETUP]: Setting up INSTABOT ---')
     bot = Bot()
@@ -46,10 +50,13 @@ def setup():
 
 # (METHOD) Post meme
 def postMeme(picture):
-    if not bot.upload_photo(picture, caption="UPLOAD_TEST"):
-       os.remove(picture) 
-
-#    bot.upload_phoo(picture, caption="UPLOAD TEST")
+    _caption = random.choice(captions) # - Get a random caption from the list in the configuration file
+    post = bot.upload_photo(picture, caption=_caption) # Upload it
+    
+                    # - Check if the upload was successful
+    if not post:
+        os.remove(picture) # - Remove from the directory
+    
     print("[POST]: Picture has been uploaded to instagram")
 
 
@@ -82,7 +89,8 @@ def main():
 
                 # - If the extension is 'REMOVE_ME', then remove the image. (instabot automatically replaces the extension of the file to be 'REMOVE_ME' as the image is posted)
                 if ext == 'REMOVE_ME':
-                    os.remove(pic)
+                    os.remove(pic) # - Remove the picture from the directory
+                    pics.remove(pic) # - Remove the image from the pics list (so we don't accidently use it)
                     print('[IMAGE REMOVAL]: ' + pic)
             print('-- [IMAGE CLEANUP FINISHED] --')
 
@@ -100,4 +108,3 @@ def main():
             
 # --- Call
 main()
-t
